@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Social Intelligence Hub — Free Guides &amp; Bundles</title>
+  <style>
+    :root { --primary:#6366F1; --secondary:#10B981; --dark:#1F2937; --light:#F3F4F6; }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:'Segoe UI',system-ui,sans-serif; background:var(--light); color:var(--dark); line-height:1.6; }
+    header { background:linear-gradient(135deg,var(--primary),#8B5CF6); color:white; padding:3rem 1rem; text-align:center; }
+    header h1 { font-size:2.2rem; margin-bottom:0.5rem; }
+    header p { opacity:0.9; font-size:1.1rem; }
+    .container { max-width:800px; margin:0 auto; padding:2rem 1rem; }
+    .card { background:white; border-radius:16px; padding:2rem; margin-bottom:1.5rem; box-shadow:0 4px 20px rgba(0,0,0,0.06); transition:transform 0.2s; }
+    .card:hover { transform:translateY(-3px); }
+    .badge { display:inline-block; background:var(--secondary); color:white; padding:0.3rem 0.9rem; border-radius:99px; font-size:0.8rem; font-weight:700; text-transform:uppercase; margin-bottom:1rem; }
+    .badge.paid { background:#F59E0B; }
+    h2 { font-size:1.5rem; margin-bottom:0.5rem; }
+    .meta { color:#6B7280; font-size:0.95rem; margin-bottom:1rem; }
+    .btn { display:inline-block; padding:0.9rem 2rem; border-radius:10px; font-weight:700; text-decoration:none; color:white; background:var(--primary); transition:background 0.2s,transform 0.2s; border:none; cursor:pointer; font-size:1rem; }
+    .btn:hover { background:#4F46E5; transform:scale(1.02); }
+    .btn.secondary { background:var(--secondary); }
+    .btn.secondary:hover { background:#059669; }
+    .btn.paid { background:#F59E0B; }
+    .btn.paid:hover { background:#D97706; }
+    .price { font-size:2rem; font-weight:800; color:var(--primary); margin:0.5rem 0; }
+    .price span { font-size:1rem; color:#6B7280; font-weight:400; }
+    footer { text-align:center; padding:2rem; color:#9CA3AF; font-size:0.9rem; }
+    .hidden { display:none; }
+    @media(max-width:480px){ header h1{font-size:1.6rem;} .card{padding:1.5rem;} }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Social Intelligence Hub</h1>
+  <p>Free psychology guides every week. Master the art of reading people.</p>
+</header>
+
+<div class="container">
+
+  <div class="card" id="current-guide">
+    <span class="badge">This Week's Free Guide</span>
+    <h2 id="guide-title">Loading...</h2>
+    <p class="meta" id="guide-meta">Check back on Monday for a new guide.</p>
+    <p id="guide-desc">Our weekly guides distill viral psychology content into actionable, printable PDFs.</p>
+    <a id="guide-download" href="#" class="btn hidden">Download Free PDF</a>
+  </div>
+
+  <div class="card">
+    <h2>All Free Guides</h2>
+    <p class="meta">Every guide we've published. Download any time.</p>
+    <div id="free-guides-list"><p style="color:#9CA3AF">No guides yet. Come back next week!</p></div>
+  </div>
+
+  <div class="card">
+    <span class="badge paid">Premium Bundles</span>
+    <h2>Social Intelligence Master Kits</h2>
+    <p class="meta">Curated bundles of our highest-rated guides.</p>
+    <div id="bundle-list"><p style="color:#9CA3AF">Bundles launching soon. Follow us on Instagram.</p></div>
+  </div>
+
+  <div class="card" style="text-align:center">
+    <h2>Get Guides Faster on Instagram</h2>
+    <p style="margin-bottom:1rem">Comment "GUIDE" on any post and we'll DM you the PDF instantly.</p>
+    <a href="https://instagram.com/socialintelligencehub" class="btn secondary" target="_blank">Follow @socialintelligencehub</a>
+  </div>
+
+</div>
+
+<footer>
+  <p>Social Intelligence Hub &copy; 2026</p>
+  <p>Built with AI. Run autonomously. Growing 24/7.</p>
+</footer>
+
+<script>
+fetch('data/guides.json')
+  .then(r => r.json())
+  .then(data => {
+    const cur = data.current;
+    if (cur) {
+      document.getElementById('guide-title').textContent = cur.title;
+      document.getElementById('guide-meta').textContent = 'Published ' + cur.date;
+      document.getElementById('guide-desc').textContent = cur.description || '';
+      const btn = document.getElementById('guide-download');
+      btn.href = cur.pdf_url;
+      btn.classList.remove('hidden');
+    }
+    const archive = document.getElementById('free-guides-list');
+    if (data.archive && data.archive.length) {
+      archive.innerHTML = data.archive.map(g =>
+        `<p><a href="${g.pdf_url}" style="color:var(--primary);text-decoration:none;font-weight:600">${g.title}</a> <span style="color:#9CA3AF">&mdash; ${g.date}</span></p>`
+      ).join('');
+    }
+    const bundles = document.getElementById('bundle-list');
+    if (data.bundles && data.bundles.length) {
+      bundles.innerHTML = data.bundles.map(b => `
+        <div class="card" style="margin:1rem 0">
+          <h3>${b.name}</h3>
+          <p class="meta">${b.pdfs.length} guides included</p>
+          <div class="price">$${b.price} <span>one-time</span></div>
+          <a href="${b.checkout_url || '#'}" class="btn paid">Get the Bundle</a>
+        </div>
+      `).join('');
+    }
+  })
+  .catch(() => {});
+</script>
+
+</body>
+</html>
